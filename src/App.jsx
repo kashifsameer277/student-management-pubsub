@@ -1,20 +1,29 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import "./store/StudentStore";
+import "./store/AttendanceStore";
+import "./store/TeacherStore";
 
+import Layout from "./layout/Layout";
 import Dashboard from "./components/dashboard/Dashboard";
-import StudentForm from "./components/students/StudentForm";
-import StudentList from "./components/students/StudentList";
-import ActivityLog from "./components/common/ActivityLog";
-import Attendance from "./attendance/Attendance";
-
+import Student from "./components/students/Student";
+import AttendancePage from "./attendance/AttendancePage";
+import Teacher from "./components/teachers/Teacher";
 
 function App() {
   return (
-    <div className="container mt-4">
-      <Dashboard />
-      <StudentForm />
-      <StudentList />
-        <ActivityLog />
-    </div>
+    <BrowserRouter>
+  <Routes>
+    <Route path="/" element={<Layout />}>
+      <Route index element={<Dashboard />} />
+      <Route path="students" element={<Student />} />
+      <Route path="attendance" element={<AttendancePage />} />
+
+      {/* This route must exist */}
+      <Route path="teachers" element={<Teacher />} />
+    </Route>
+  </Routes>
+</BrowserRouter>
   );
 }
 

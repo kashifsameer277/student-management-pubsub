@@ -11,8 +11,11 @@ ATTENDANCE_UPDATE: "attendance:update",
 ATTENDANCE_STORE_UPDATED: "attendance:store:updated",
 
   TEACHER_ADD: "teacher:add",
+  TEACHER_EDIT: "teacher:edit",
   TEACHER_UPDATE: "teacher:update",
   TEACHER_DELETE: "teacher:delete",
+  TEACHER_STORE_UPDATED: "teacher:store:updated",
+TEACHER_DELETED: "teacher:deleted",
 
   ATTENDANCE_MARK: "attendance:mark",
 
