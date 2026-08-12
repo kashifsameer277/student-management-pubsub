@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   return (
@@ -48,6 +49,9 @@ const Sidebar = () => {
   >
     👨‍🏫 Teachers
   </NavLink>
+  <Link to="/courses" className="list-group-item list-group-item-action">
+  📚 Courses
+</Link>
 </li>
 
       </ul>

@@ -5,6 +5,9 @@ import StudentStore from "../../store/StudentStore";
 import StatsCard from "./StatsCard";
 import TeacherStore from "../../store/TeacherStore";
 import RecentActivity from "./RecentActivity";
+import { Link } from "react-router-dom";
+import CourseStore from "../../store/CourseStore";
+
 
 const Dashboard = () => {
   const [totalStudents, setTotalStudents] = useState(
@@ -12,6 +15,9 @@ const Dashboard = () => {
   );
   const [totalTeachers, setTotalTeachers] = useState(
   TeacherStore.getTeachers().length
+);
+const [totalCourses, setTotalCourses] = useState(
+  CourseStore.getCourses().length
 );
 
   useEffect(() => {
@@ -27,10 +33,17 @@ const Dashboard = () => {
     setTotalTeachers(teachers.length);
   }
 );
+const unsubscribeCourses = EventBus.subscribe(
+  EVENTS.COURSE_STORE_UPDATED,
+  (courses) => {
+    setTotalCourses(courses.length);
+  }
+);
 
     return () => {
   unsubscribe();
   unsubscribeTeacher();
+   unsubscribeCourses();
 };
   }, []);
 
@@ -49,14 +62,20 @@ const Dashboard = () => {
       </div>
 
       <div>
-        <button className="btn btn-primary me-2">
-          + Student
-        </button>
+  <Link
+    to="/students"
+    className="btn btn-primary me-2"
+  >
+    + Student
+  </Link>
 
-        <button className="btn btn-success">
-          + Teacher
-        </button>
-      </div>
+  <Link
+    to="/teachers"
+    className="btn btn-success"
+  >
+    + Teacher
+  </Link>
+</div>
     </div>
       <div className="row">
         <StatsCard
@@ -82,7 +101,7 @@ const Dashboard = () => {
 
         <StatsCard
           title="Courses"
-          value={0}
+          value={totalCourses}
           icon="📚"
           color="danger"
         />

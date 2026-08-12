@@ -17,7 +17,15 @@ ATTENDANCE_STORE_UPDATED: "attendance:store:updated",
   TEACHER_STORE_UPDATED: "teacher:store:updated",
 TEACHER_DELETED: "teacher:deleted",
 
+COURSE_ADD: "course:add",
+COURSE_EDIT: "course:edit",
+COURSE_UPDATE: "course:update",
+COURSE_DELETE: "course:delete",
+COURSE_DELETED: "course:deleted",
+COURSE_STORE_UPDATED: "course:store:updated",
+
   ATTENDANCE_MARK: "attendance:mark",
 
   DASHBOARD_REFRESH: "dashboard:refresh",
+  ACTIVITY_UPDATED: "activity:updated",
 };
