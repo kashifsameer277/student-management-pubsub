@@ -4,6 +4,7 @@ class EventBus {
   }
 
   subscribe(eventName, callback) {
+     
     if (!this.events[eventName]) {
       this.events[eventName] = [];
     }
@@ -18,6 +19,8 @@ class EventBus {
   }
 
   publish(eventName, data) {
+    console.log("Publishing event:", eventName);
+  console.log("Available listeners:", this.events[eventName]);
     if (!this.events[eventName]) return;
 
     this.events[eventName].forEach((callback) => {

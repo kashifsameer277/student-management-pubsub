@@ -10,6 +10,9 @@ const CourseList = () => {
   );
 
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const coursesPerPage = 5;
 
   useEffect(() => {
     const unsubscribe = EventBus.subscribe(
@@ -33,6 +36,22 @@ const CourseList = () => {
         .includes(search.toLowerCase())
   );
 
+  // Pagination
+  const indexOfLastCourse =
+    currentPage * coursesPerPage;
+
+  const indexOfFirstCourse =
+    indexOfLastCourse - coursesPerPage;
+
+  const currentCourses = filteredCourses.slice(
+    indexOfFirstCourse,
+    indexOfLastCourse
+  );
+
+  const totalPages = Math.ceil(
+    filteredCourses.length / coursesPerPage
+  );
+
   return (
     <div className="card p-3">
       <h4>Courses</h4>
@@ -43,11 +62,13 @@ const CourseList = () => {
         className="form-control mb-3"
         placeholder="Search by course name or code..."
         value={search}
-        onChange={(e) =>
-          setSearch(e.target.value)
-        }
+        onChange={(e) => {
+          setSearch(e.target.value);
+          setCurrentPage(1);
+        }}
       />
 
+      {/* Course Table */}
       <table className="table table-bordered">
         <thead>
           <tr>
@@ -58,11 +79,10 @@ const CourseList = () => {
         </thead>
 
         <tbody>
-          {filteredCourses.length > 0 ? (
-            filteredCourses.map((course) => (
+          {currentCourses.length > 0 ? (
+            currentCourses.map((course) => (
               <tr key={course.id}>
                 <td>{course.name}</td>
-
                 <td>{course.code}</td>
 
                 <td>
@@ -78,9 +98,7 @@ const CourseList = () => {
                   <button
                     className="btn btn-danger btn-sm"
                     onClick={() =>
-                      CourseService.deleteCourse(
-                        course.id
-                      )
+                      CourseService.deleteCourse(course.id)
                     }
                   >
                     Delete
@@ -100,6 +118,72 @@ const CourseList = () => {
           )}
         </tbody>
       </table>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <nav className="mt-3">
+          <ul className="pagination justify-content-center mb-0">
+
+            {/* Previous */}
+            <li
+              className={`page-item ${
+                currentPage === 1 ? "disabled" : ""
+              }`}
+            >
+              <button
+                className="page-link"
+                onClick={() =>
+                  setCurrentPage(currentPage - 1)
+                }
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+            </li>
+
+            {/* Page Numbers */}
+            {[...Array(totalPages)].map((_, index) => (
+              <li
+                key={index}
+                className={`page-item ${
+                  currentPage === index + 1
+                    ? "active"
+                    : ""
+                }`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() =>
+                    setCurrentPage(index + 1)
+                  }
+                >
+                  {index + 1}
+                </button>
+              </li>
+            ))}
+
+            {/* Next */}
+            <li
+              className={`page-item ${
+                currentPage === totalPages
+                  ? "disabled"
+                  : ""
+              }`}
+            >
+              <button
+                className="page-link"
+                onClick={() =>
+                  setCurrentPage(currentPage + 1)
+                }
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </li>
+
+          </ul>
+        </nav>
+      )}
     </div>
   );
 };

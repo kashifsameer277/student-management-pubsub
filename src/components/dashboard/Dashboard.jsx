@@ -7,6 +7,8 @@ import TeacherStore from "../../store/TeacherStore";
 import RecentActivity from "./RecentActivity";
 import { Link } from "react-router-dom";
 import CourseStore from "../../store/CourseStore";
+import AttendanceStore from "../../store/AttendanceStore";
+
 
 
 const Dashboard = () => {
@@ -19,33 +21,83 @@ const Dashboard = () => {
 const [totalCourses, setTotalCourses] = useState(
   CourseStore.getCourses().length
 );
+const [attendancePercentage, setAttendancePercentage] =
+  useState(0);
+  const [presentToday, setPresentToday] = useState(0);
+const [absentToday, setAbsentToday] = useState(0);
 
-  useEffect(() => {
-    const unsubscribe = EventBus.subscribe(
-      EVENTS.STUDENT_STORE_UPDATED,
-      (students) => {
-        setTotalStudents(students.length);
-      }
-    );
-    const unsubscribeTeacher = EventBus.subscribe(
-  EVENTS.TEACHER_STORE_UPDATED,
-  (teachers) => {
-    setTotalTeachers(teachers.length);
-  }
-);
-const unsubscribeCourses = EventBus.subscribe(
-  EVENTS.COURSE_STORE_UPDATED,
-  (courses) => {
-    setTotalCourses(courses.length);
-  }
-);
+  const calculateAttendance = (records) => {
+  const today = new Date().toLocaleDateString();
 
-    return () => {
-  unsubscribe();
-  unsubscribeTeacher();
-   unsubscribeCourses();
+  const todayAttendance = records.filter(
+    (record) => record.date === today
+  );
+
+  const presentCount = todayAttendance.filter(
+    (record) => record.status === "Present"
+  ).length;
+
+  const absentCount = todayAttendance.filter(
+    (record) => record.status === "Absent"
+  ).length;
+
+  const total = StudentStore.getStudents().length;
+
+  const percentage =
+    total > 0
+      ? Math.round((presentCount / total) * 100)
+      : 0;
+
+  setPresentToday(presentCount);
+  setAbsentToday(absentCount);
+  setAttendancePercentage(percentage);
 };
-  }, []);
+
+ useEffect(() => {
+  const unsubscribe = EventBus.subscribe(
+    EVENTS.STUDENT_STORE_UPDATED,
+    (students) => {
+      setTotalStudents(students.length);
+
+      calculateAttendance(
+        AttendanceStore.getAttendance()
+      );
+    }
+  );
+
+  const unsubscribeTeacher = EventBus.subscribe(
+    EVENTS.TEACHER_STORE_UPDATED,
+    (teachers) => {
+      setTotalTeachers(teachers.length);
+    }
+  );
+
+  const unsubscribeCourses = EventBus.subscribe(
+    EVENTS.COURSE_STORE_UPDATED,
+    (courses) => {
+      setTotalCourses(courses.length);
+    }
+  );
+
+  const unsubscribeAttendance = EventBus.subscribe(
+    EVENTS.ATTENDANCE_STORE_UPDATED,
+    (records) => {
+      calculateAttendance(records);
+    }
+  );
+
+  // Calculate attendance when Dashboard opens
+  calculateAttendance(
+    AttendanceStore.getAttendance()
+  );
+
+  return () => {
+    unsubscribe();
+    unsubscribeTeacher();
+    unsubscribeCourses();
+    unsubscribeAttendance();
+  };
+}, []);
 
   return (
   <div className="container-fluid">
@@ -93,11 +145,14 @@ const unsubscribeCourses = EventBus.subscribe(
         />
 
         <StatsCard
-          title="Attendance"
-          value="0%"
-          icon="📅"
-          color="warning"
-        />
+  title="Attendance"
+  value={`${attendancePercentage}%`}
+  icon="📅"
+  color="warning"
+  presentToday={presentToday}
+  absentToday={absentToday}
+/>
+       
 
         <StatsCard
           title="Courses"
