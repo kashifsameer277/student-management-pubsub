@@ -42,20 +42,20 @@ class AttendanceStore {
 
     // Delete Attendance
     EventBus.subscribe(
-      EVENTS.ATTENDANCE_DELETE,
-      (id) => {
-        this.attendance = this.attendance.filter(
-          (record) => record.id !== id
-        );
-
-        this.saveAttendance();
-
-        EventBus.publish(
-          EVENTS.ATTENDANCE_STORE_UPDATED,
-          this.attendance
-        );
-      }
+  EVENTS.ATTENDANCE_DELETE,
+  (id) => {
+    this.attendance = this.attendance.filter(
+      (record) => record.id !== id
     );
+
+    this.saveAttendance();
+
+    EventBus.publish(
+      EVENTS.ATTENDANCE_STORE_UPDATED,
+      this.attendance
+    );
+  }
+);
   }
 
   saveAttendance() {

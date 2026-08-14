@@ -63,7 +63,7 @@ const handleAttendance = (student, status) => {
   }
 };
  const getStudentAttendance = (studentId) => {
-  const today = new Date().toLocaleDateString();
+  const today = new Date().toISOString().split("T")[0];
 
   const records = attendance.filter(
     (record) =>
@@ -74,7 +74,7 @@ const handleAttendance = (student, status) => {
 
   return records[records.length - 1];
 };
-const today = new Date().toLocaleDateString();
+const today = new Date().toISOString().split("T")[0];
 
 const todayAttendance = attendance.filter(
   (record) => record.date === today
@@ -104,6 +104,11 @@ const attendancePercentage =
 
   return matchesSearch && matchesDate;
 });
+const formatDate = (dateString) => {
+  const [year, month, day] = dateString.split("-");
+
+  return `${day}/${month}/${year}`;
+};
 
   return (
     <div className="container mt-4">
@@ -257,8 +262,9 @@ const attendancePercentage =
       <thead>
         <tr>
           <th>Student Name</th>
-          <th>Date</th>
-          <th>Status</th>
+<th>Date</th>
+<th>Status</th>
+<th>Action</th>
         </tr>
       </thead>
 
@@ -270,8 +276,8 @@ const attendancePercentage =
               <tr key={record.id}>
                 <td>{record.studentName}</td>
 
-                <td>{record.date}</td>
-
+                <td>{formatDate(record.date)}</td>
+                
                 <td>
                   <span
                     className={
@@ -283,13 +289,42 @@ const attendancePercentage =
                     {record.status}
                   </span>
                 </td>
+                
+                <td>
+                  <button
+  type="button"
+  className="btn btn-primary btn-sm me-2"
+  onClick={() =>
+    AttendanceService.updateAttendance({
+      ...record,
+      status:
+        record.status === "Present"
+          ? "Absent"
+          : "Present",
+    })
+  }
+>
+  ✏️ Edit
+</button>
+  <button
+    type="button"
+    className="btn btn-danger btn-sm"
+    onClick={() => {
+      AttendanceService.deleteAttendance(record.id);
+    }}
+  >
+    🗑 Delete
+  </button>
+</td>
+               
               </tr>
             ))
         ) : (
           <tr>
-            <td colSpan="3" className="text-center text-muted">
+            <td colSpan="4" className="text-center text-muted">
               No attendance records found.
             </td>
+             
           </tr>
         )}
       </tbody>

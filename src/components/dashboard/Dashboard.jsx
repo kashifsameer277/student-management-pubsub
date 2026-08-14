@@ -27,7 +27,7 @@ const [attendancePercentage, setAttendancePercentage] =
 const [absentToday, setAbsentToday] = useState(0);
 
   const calculateAttendance = (records) => {
-  const today = new Date().toLocaleDateString();
+  const today = new Date().toISOString().split("T")[0];
 
   const todayAttendance = records.filter(
     (record) => record.date === today
