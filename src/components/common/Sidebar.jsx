@@ -1,7 +1,23 @@
 import { NavLink } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import EventBus from "../../pubsub/EventBus";
+import { EVENTS } from "../../pubsub/events";
 
 const Sidebar = () => {
+  const [instituteName, setInstituteName] = useState(
+  "Radiant Coaching Centre"
+);
+
+useEffect(() => {
+  const savedSettings = JSON.parse(
+    localStorage.getItem("instituteSettings")
+  );
+
+  if (savedSettings?.instituteName) {
+    setInstituteName(savedSettings.instituteName);
+  }
+}, []);
   return (
     <div
       className="bg-dark text-white"
@@ -11,8 +27,8 @@ const Sidebar = () => {
       }}
     >
       <h3 className="p-3 border-bottom">
-        School ERP
-      </h3>
+  🏫 {instituteName}
+</h3>
 
       <ul className="nav flex-column">
 
@@ -52,6 +68,17 @@ const Sidebar = () => {
   <Link to="/courses" className="list-group-item list-group-item-action">
   📚 Courses
 </Link>
+<NavLink
+  to="/reports"
+  className="nav-link text-white"
+>
+  📊 Reports
+</NavLink>
+<NavLink to="/settings"
+ className="nav-link text-white">
+
+  ⚙️ Settings
+</NavLink>
 </li>
 
       </ul>

@@ -12,7 +12,8 @@ import Student from "./components/students/Student";
 import AttendancePage from "./attendance/AttendancePage";
 import Teacher from "./components/teachers/Teacher";
 import Course from "./components/courses/Course";
-
+import ReportsPage from "./components/Reports/ReportsPage";
+import SettingsPage from "./components/settings/SettingsPage";
 function App() {
   return (
     <BrowserRouter>
@@ -25,6 +26,8 @@ function App() {
       {/* This route must exist */}
       <Route path="teachers" element={<Teacher />} />
       <Route path="/courses" element={<Course />} />
+      <Route path="/reports" element={<ReportsPage />} />
+      <Route path="/settings" element={<SettingsPage />} />
     </Route>
   </Routes>
 </BrowserRouter>

@@ -24,10 +24,7 @@ COURSE_DELETE: "course:delete",
 COURSE_DELETED: "course:deleted",
 COURSE_STORE_UPDATED: "course:store:updated",
 
-ATTENDANCE_ADD: "attendance:add",
-  ATTENDANCE_UPDATE: "attendance:update",
-  ATTENDANCE_DELETE: "attendance:delete",
-  ATTENDANCE_STORE_UPDATED: "attendance:store:updated",
+SETTINGS_UPDATED: "SETTINGS_UPDATED",
 
     ACTIVITY_UPDATED: "activity:updated",
     DASHBOARD_REFRESH: "dashboard:refresh",

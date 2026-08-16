@@ -7,19 +7,31 @@ class AttendanceStore {
       JSON.parse(localStorage.getItem("attendance")) || [];
 
     // Add Attendance
-    EventBus.subscribe(EVENTS.ATTENDANCE_ADD, (record) => {
-       
+EventBus.subscribe(EVENTS.ATTENDANCE_ADD, (record) => {
+  const existingIndex = this.attendance.findIndex(
+    (item) =>
+      item.studentId === record.studentId &&
+      item.date === record.date
+  );
 
-      this.attendance.push(record);
+  if (existingIndex !== -1) {
+    // Update existing attendance instead of adding duplicate
+    this.attendance[existingIndex] = {
+      ...this.attendance[existingIndex],
+      status: record.status,
+    };
+  } else {
+    // Add new attendance record
+    this.attendance.push(record);
+  }
 
-      this.saveAttendance();
-       
+  this.saveAttendance();
 
-      EventBus.publish(
-        EVENTS.ATTENDANCE_STORE_UPDATED,
-        this.attendance
-      );
-    });
+  EventBus.publish(
+    EVENTS.ATTENDANCE_STORE_UPDATED,
+    [...this.attendance]
+  );
+});
 
     // Update Attendance
     EventBus.subscribe(
