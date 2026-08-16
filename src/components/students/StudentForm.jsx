@@ -7,47 +7,54 @@ const StudentForm = () => {
   const [name, setName] = useState("");
   const [rollNo, setRollNo] = useState("");
   const [editingStudent, setEditingStudent] = useState(null);
+
   useEffect(() => {
-  const unsubscribe = EventBus.subscribe(
-    EVENTS.STUDENT_EDIT,
-    (student) => {
-      setEditingStudent(student);
-      setName(student.name);
-      setRollNo(student.rollNo);
-    }
-  );
+    const unsubscribe = EventBus.subscribe(
+      EVENTS.STUDENT_EDIT,
+      (student) => {
+        setEditingStudent(student);
+        setName(student.name);
+        setRollNo(student.rollNo);
+      }
+    );
 
-  return unsubscribe;
-}, []);
+    return unsubscribe;
+  }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!name || !rollNo) return;
 
-    if (editingStudent) {
-  StudentService.updateStudent({
-    ...editingStudent,
-    name,
-    rollNo,
-  });
+    try {
+      if (editingStudent) {
+        StudentService.updateStudent({
+          ...editingStudent,
+          name,
+          rollNo,
+        });
 
-  setEditingStudent(null);
-} else {
-  StudentService.addStudent({
-    id: Date.now(),
-    name,
-    rollNo,
-  });
-}
+        setEditingStudent(null);
+      } else {
+        await StudentService.addStudent({
+          name,
+          rollNo,
+        });
+      }
 
-setName("");
-setRollNo("");
+      setName("");
+      setRollNo("");
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Failed to add student");
+    }
   };
 
   return (
     <div className="card p-3 mb-4">
-      <h4>Add Student</h4>
+      <h4>
+        {editingStudent ? "Update Student" : "Add Student"}
+      </h4>
 
       <form onSubmit={handleSubmit}>
         <input
@@ -67,8 +74,8 @@ setRollNo("");
         />
 
         <button className="btn btn-primary">
-  {editingStudent ? "Update Student" : "Add Student"}
-</button>
+          {editingStudent ? "Update Student" : "Add Student"}
+        </button>
       </form>
     </div>
   );
