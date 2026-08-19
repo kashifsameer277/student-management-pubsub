@@ -95,6 +95,75 @@ app.post("/api/students", async (req, res) => {
     });
   }
 });
+// Update student
+app.put("/api/students/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const { name, rollNo } = req.body;
+
+    if (isNaN(id)) {
+      return res.status(400).json({
+        error: "Invalid student ID",
+      });
+    }
+
+    if (!name || !rollNo) {
+      return res.status(400).json({
+        error: "Name and Roll Number are required",
+      });
+    }
+
+    const student = await prisma.student.update({
+      where: {
+        id: id,
+      },
+      data: {
+        name,
+        rollNo,
+      },
+    });
+
+    res.json(student);
+  } catch (error) {
+    console.error("Update student error:", error);
+
+    res.status(500).json({
+      error: "Failed to update student",
+    });
+  }
+});
+
+// Delete student
+app.delete("/api/students/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (isNaN(id)) {
+      return res.status(400).json({
+        error: "Invalid student ID",
+      });
+    }
+
+    const student = await prisma.student.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    res.json({
+      message: "Student deleted successfully",
+      student,
+    });
+  } catch (error) {
+    console.error("Delete student error:", error);
+
+    res.status(500).json({
+      error: "Failed to delete student",
+    });
+  }
+});
+
+// Start server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

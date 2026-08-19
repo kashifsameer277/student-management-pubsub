@@ -14,6 +14,8 @@ import Teacher from "./components/teachers/Teacher";
 import Course from "./components/courses/Course";
 import ReportsPage from "./components/Reports/ReportsPage";
 import SettingsPage from "./components/settings/SettingsPage";
+import StudentDetails from "./components/students/StudentDetails";
+
 function App() {
   return (
     <BrowserRouter>
@@ -21,6 +23,7 @@ function App() {
     <Route path="/" element={<Layout />}>
       <Route index element={<Dashboard />} />
       <Route path="students" element={<Student />} />
+      <Route path="students/:id" element={<StudentDetails />} />
       <Route path="attendance" element={<AttendancePage />} />
 
       {/* This route must exist */}
@@ -28,6 +31,7 @@ function App() {
       <Route path="/courses" element={<Course />} />
       <Route path="/reports" element={<ReportsPage />} />
       <Route path="/settings" element={<SettingsPage />} />
+      
     </Route>
   </Routes>
 </BrowserRouter>

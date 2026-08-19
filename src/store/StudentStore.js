@@ -1,67 +1,103 @@
 import EventBus from "../pubsub/EventBus";
 import { EVENTS } from "../pubsub/events";
+import { getStudents } from "../api/studentApi";
 
 class StudentStore {
   constructor() {
-    this.students =
-  JSON.parse(localStorage.getItem("students")) || [];
+    // MySQL will be the source of truth
+    this.students = [];
 
+    // Load students from backend
+    this.loadStudents();
+
+    // ADD
     EventBus.subscribe(EVENTS.STUDENT_ADD, (student) => {
       this.students.push(student);
-      this.saveStudents();
+
       EventBus.publish(
-  EVENTS.STUDENT_STORE_UPDATED,
-  this.students
-);
-     EventBus.publish(EVENTS.DASHBOARD_REFRESH, {
+        EVENTS.STUDENT_STORE_UPDATED,
+        this.students
+      );
+
+      EventBus.publish(EVENTS.DASHBOARD_REFRESH, {
         totalStudents: this.students.length,
       });
     });
-  EventBus.subscribe(EVENTS.STUDENT_DELETE, (id) => {
-  const deletedStudent = this.students.find(
-    (student) => student.id === id
-  );
 
-  this.students = this.students.filter(
-    (student) => student.id !== id
-  );
-  this.saveStudents();
+    // DELETE
+    EventBus.subscribe(EVENTS.STUDENT_DELETE, (id) => {
+      const deletedStudent = this.students.find(
+        (student) => String(student.id) === String(id)
+      );
 
-  EventBus.publish(
-    EVENTS.STUDENT_STORE_UPDATED,
-    this.students
-  );
+      this.students = this.students.filter(
+        (student) => String(student.id) !== String(id)
+      );
 
-  EventBus.publish(EVENTS.DASHBOARD_REFRESH, {
-    totalStudents: this.students.length,
-  });
+      EventBus.publish(
+        EVENTS.STUDENT_STORE_UPDATED,
+        this.students
+      );
 
-  EventBus.publish(EVENTS.STUDENT_DELETED, deletedStudent);
-});
-EventBus.subscribe(EVENTS.STUDENT_UPDATE, (updatedStudent) => {
-  this.students = this.students.map((student) =>
-    student.id === updatedStudent.id
-      ? updatedStudent
-      : student
-  );
-  this.saveStudents();
+      EventBus.publish(EVENTS.DASHBOARD_REFRESH, {
+        totalStudents: this.students.length,
+      });
 
-  EventBus.publish(
-    EVENTS.STUDENT_STORE_UPDATED,
-    this.students
-  );
+      EventBus.publish(
+        EVENTS.STUDENT_DELETED,
+        deletedStudent
+      );
+    });
 
-  EventBus.publish(EVENTS.DASHBOARD_REFRESH, {
-    totalStudents: this.students.length,
-  });
-});
+    // UPDATE
+    EventBus.subscribe(
+      EVENTS.STUDENT_UPDATE,
+      (updatedStudent) => {
+        this.students = this.students.map((student) =>
+          String(student.id) === String(updatedStudent.id)
+            ? updatedStudent
+            : student
+        );
+
+        EventBus.publish(
+          EVENTS.STUDENT_STORE_UPDATED,
+          this.students
+        );
+
+        EventBus.publish(EVENTS.DASHBOARD_REFRESH, {
+          totalStudents: this.students.length,
+        });
+      }
+    );
   }
-  saveStudents() {
-  localStorage.setItem(
-    "students",
-    JSON.stringify(this.students)
-  );
-}
+
+  // Load students from MySQL through backend
+  async loadStudents() {
+    try {
+      const students = await getStudents();
+
+      this.students = students;
+
+      console.log(
+        "Students loaded from MySQL:",
+        this.students
+      );
+
+      EventBus.publish(
+        EVENTS.STUDENT_STORE_UPDATED,
+        this.students
+      );
+
+      EventBus.publish(EVENTS.DASHBOARD_REFRESH, {
+        totalStudents: this.students.length,
+      });
+    } catch (error) {
+      console.error(
+        "Failed to load students:",
+        error
+      );
+    }
+  }
 
   getStudents() {
     return this.students;
